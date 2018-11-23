@@ -5,7 +5,7 @@ This is the sample code of showing how to convert RGB value captured by videoCap
 Settings
 - XCAM_single (YUYV output thermal image)
 - Non-adaptive color mapping mode
-- Using defalut colorPalette0
+- Using default colorPalette0
 - SetTempDisplay(0)
 
 createColorTable() : create the color table following the same algorithm on MCU, it is firmware dependent
