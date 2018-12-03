@@ -1,6 +1,6 @@
 # MI_XCAM_rgb2temp_example
 This is the testing application of using Meridian Innovation Limited 32x32 XCAM on Python.
-![](MI_XCAM_test1.jpg "Sample")
+![](MI_XCAM_test1.jpg "Snapshot")
 
 ## Settings
 * XCAM_single (YUYV output thermal image)
