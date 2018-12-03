@@ -1,6 +1,7 @@
 # MI_XCAM_rgb2temp_example
 This is the testing application of using Meridian Innovation Limited 32x32 XCAM.
--[](https://github.com/MeridianInno/MI_XCAM_rgb2temp_example/blob/master/MI_XCAM_test1.jpg "Sample")
+![](MI_XCAM_test1.jpg "Sample")
+
 Settings
 - XCAM_single (YUYV output thermal image)
 - Non-adaptive color mapping mode
