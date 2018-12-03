@@ -1,14 +1,14 @@
 # MI_XCAM_rgb2temp_example
-This is the testing application of using Meridian Innovation Limited 32x32 XCAM.
+This is the testing application of using Meridian Innovation Limited 32x32 XCAM on Python.
 ![](MI_XCAM_test1.jpg "Sample")
 
-Settings
-- XCAM_single (YUYV output thermal image)
-- Non-adaptive color mapping mode
-- *Using defalut colorPalette0
-- SetTempDisplay(0)
+## Settings
+* XCAM_single (YUYV output thermal image)
+* Non-adaptive color mapping mode
+* *Using defalut colorPalette0
+* SetTempDisplay(0)
 
-Functions
+## Functions
 - [x] Dead Pixel Testing
 - [x] rgb2tmp Example
 - [ ] YUYV2tmp Example
@@ -19,5 +19,4 @@ find_nearest(array, value): find the nearest point that matching to the target R
 
 "frame" is the raw data captured by cap.read() which is in BGR color space in size of 192x192, 6 times enlarged from 32x32.
 
-Please refers to XCAM thermal sensor SDK for more firmware details.
-https://github.com/MeridianInnovation/MI_XCAM_formalRelease
+Please refers to [MI_XCAM SDK](https://github.com/MeridianInnovation/MI_XCAM_formalRelease "MI_XCAM_formalRelease") for more firmware details.
