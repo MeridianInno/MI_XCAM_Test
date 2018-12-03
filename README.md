@@ -1,12 +1,16 @@
 # MI_XCAM_rgb2temp_example
-This is the sample code of showing how to convert RGB value captured by videoCapture object to temperature value on Python.
-
+This is the testing application of using Meridian Innovation Limited 32x32 XCAM.
 
 Settings
 - XCAM_single (YUYV output thermal image)
 - Non-adaptive color mapping mode
-- Using default colorPalette0
+- *Using defalut colorPalette0
 - SetTempDisplay(0)
+
+Functions
+1) Dead Pixel Testing
+2) rgb2tmp Example
+3) YUYV2tmp Example
 
 createColorTable() : create the color table following the same algorithm on MCU, it is firmware dependent
 

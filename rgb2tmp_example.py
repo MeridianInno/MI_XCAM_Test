@@ -1,9 +1,22 @@
+# Copyright (C) 2018 MERIDIAN Innovation Limited. All rights reserved.
 import cv2
 import numpy as np
 import math
+import time
+
+from statistics import stdev
+
+# Constant defined
+XCAM_WIDTH = 32
+XCAM_HEIGHT = 32
+VIDEO_WIDTH = XCAM_WIDTH * 6      # Defined from firmware
+VIDEO_HEIGHT = XCAM_HEIGHT * 6
 
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(precision=1, suppress=True)
+cap = cv2.VideoCapture(0)
+cap.set(3,XCAM_WIDTH)                     # CV_CAP_PROP_FRAME_WIDTH
+cap.set(4,XCAM_HEIGHT)                    # CV_CAP_PROP_FRAME_HEIGHT
 
 def createColorTable():
   colorPalette0 =  np.array([[176,0,240],
@@ -87,17 +100,74 @@ def find_nearest(array, value):
     targetIdx = idx_numpy.argmin()
     return targetIdx, array[targetIdx]
 
+def getTrimmedFrame(original_frame, src_frame, width, height):
+    for i in range(width):
+      for j in range(height):
+        index, value = find_nearest(color_table,original_frame[3+6*i][3+6*j])
+        src_frame[i][j] = (index - 600)/10
+        
+########################## Routines ##########################
+# 0 <= sd_threshould <= 1 
+def dead_pixel_test(sd_threshould):
+  std_tempArray = [[[0] * XCAM_WIDTH for i in range(XCAM_HEIGHT)] for frame in range(2)]
+  print("Dead Pixel Testing")
+  print("Please cover the camera with constant room temperature object within 3 seconds")
+  for count in range(2):
+      # Take 2 frame
+      _, frame = cap.read()
+      title = str("frame" + str(count))
+      cv2.imshow(title,frame)
+      getTrimmedFrame(frame,std_tempArray[count],XCAM_WIDTH,XCAM_HEIGHT)
+
+      if(count == 0):
+        print("Now fully cover the camera with human hand within 3 seconds")
+        time.sleep(3)
+        print("Second capturing")
+      else:
+        print("Done")
+      
+  arr = np.asarray(std_tempArray)
+  std_arr = np.std(arr, axis=0)
+  index = np.where(std_arr < sd_threshould)
+  #print(std_arr[[std < 0.5 for std in std_arr]])
+  for k in range(len(index[0])):
+    print("[" + str(index[1][k]) + "," + str(index[0][k]) + "]")
+
+  cv2.waitKey(1)
+  
+def rgb2tmp(x,y):
+    while(1):
+
+        # Take each frame
+        check, frame = cap.read()
+        if not check:
+          print("Open XCAM failure...")
+          print("Check cap = cv2.VideoCapture(0) pointing to XCAM device")
+          break
+        index, value = find_nearest(color_table,frame[3+6*x][3+6*y])
+        value_str = str(np.array2string(value, precision=1, separator=','))
+        print("index = " + str(index) + ":" + value_str+ ", " + str((index - 600)/10))
+    
+        cv2.imshow('frame',frame)
+    
+        k = cv2.waitKey(5) & 0xFF
+        if k == 27:
+            break
 ################################################################################################################
-# This is the example of showing how to convert RGB value captured by videoCapture object to temperature value
-# using Meridian Innovation Limited XCAM.
+# This is the testing application of using Meridian Innovation Limited 32x32 XCAM.
 # 
 # Settings
 # - XCAM_single (YUYV output thermal image)
 # - Non-adaptive color mapping mode
-# - Using default colorPalette0
+# - *Using defalut colorPalette0
 # - SetTempDisplay(0)
 #
-# createColorTable() : create the color table following the same algorithm on MCU, it is firmware dependent
+# Functions
+# 1) Dead Pixel Testing
+# 2) rgb2tmp Example
+# 3) YUYV2tmp Example
+#
+# createColorTable() : create the color table following the same algorithm on MCU firmware, it is palette dependent*
 # find_nearest(array, value): find the nearest point that matching to the target RGB value, since the cap.read()
 #                             convert the YUYV stream to BGR internally, the convertion makes precision issue,
 #                             which is why we cannot directly mapping by comparing R,G,B value only.
@@ -105,23 +175,31 @@ def find_nearest(array, value):
 # "frame" is the raw data captured by cap.read() which is in BGR color space in size of 192x192, 6 times enlarged.
 # You can get original 32x32 pixel value by trimming the array.
 ################################################################################################################
-cap = cv2.VideoCapture(0)
-cap.set(3,192)
-cap.set(4,192)
-color_table = np.asarray(createColorTable())
+while 1:
+  print("-------------------------MI XCAM test-------------------------")
+  color_table = np.asarray(createColorTable())
+  print("1) Dead Pixel Testing")
+  print("2) rgb2tmp Example")
+  print("3) YUYV2tmp Example")
+  print("q) Quit")
+  choice = input("Input: ")
+  cv2.destroyAllWindows()
+  if(choice == "1"):
+      dead_pixel_test(0.05)
+  elif(choice == "2"):
+      print("Demo will also convert target pixel from rgb to temperature value")
+      print("Input the target coordination in the format of x,y where 0<= x,y < 32")
+      x,y = input("Coordinate = ").split(",")
+      print("Press Esc to quit")
+      time.sleep(3)
+      rgb2tmp(int(x),int(y))
+  elif(choice == "3"):
+      print("Not implemented yet")
+  elif(choice == "q"):
+      break
+  else:
+      print("Wrong input!")
 
-while(1):
-
-    # Take each frame
-    _, frame = cap.read()
-    index, value = find_nearest(color_table,frame[0][0])
-    value_str = str(np.array2string(value, precision=1, separator=','))
-    print("index = " + str(index) + ":" + value_str+ ", " + str((index - 600)/10))
-    
-    cv2.imshow('frame',frame)
-    
-    k = cv2.waitKey(5) & 0xFF
-    if k == 27:
-        break
 
 cv2.destroyAllWindows()
+cap.release()
