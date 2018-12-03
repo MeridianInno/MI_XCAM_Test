@@ -6,12 +6,13 @@ import time
 
 from statistics import stdev
 
-# Constant defined
+# Constant
 XCAM_WIDTH = 32
 XCAM_HEIGHT = 32
 VIDEO_WIDTH = XCAM_WIDTH * 6      # Defined from firmware
 VIDEO_HEIGHT = XCAM_HEIGHT * 6
 
+# Video device has to be in global scope
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(precision=1, suppress=True)
 cap = cv2.VideoCapture(0)
